@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Miku Hatsune (MIKU) — Pump.fun</title>
+  <meta name="description" content="Miku Hatsune (MIKU) — meme token on Solana. Created on Pump.fun. Beautiful site with CA, tokenomics and guide on how to buy." />
+  <meta property="og:title" content="Miku Hatsune (MIKU) — Pump.fun" />
+  <meta property="og:description" content="Meme token Miku Hatsune (MIKU) on Solana. Check CA, tokenomics and how to buy on Pump.fun." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#b7e6e6" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Unbounded:wght@800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg-0: #f0fafa;
+      --bg-1: #d0f0f0;
+      --bg-2: #b0e0e0;
+      --text: #002020;
+      --muted: #408080;
+      --primary: #00ffff; /* brighter cyan */
+      --secondary: #ff80c0; /* softer pink */
+      --accent: #40c0c0; /* teal */
+      --success: #00ff80; /* green */
+      --card: rgba(0,0,0,0.04);
+      --card-2: rgba(0,0,0,0.02);
+      --border: rgba(0,0,0,0.08);
+      --shadow: 0 8px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{min-height:100vh}
+    body{
+      margin:0;
+      font-family: Manrope, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      color:var(--text);
+      background: radial-gradient(1400px 900px at 70% 10%, rgba(0,255,255,0.3), transparent 50%),
+                  radial-gradient(1200px 800px at 20% 80%, rgba(255,128,192,0.25), transparent 50%),
+                  radial-gradient(1000px 700px at 50% 50%, rgba(64,192,192,0.2), transparent 60%),
+                  linear-gradient(180deg, #f0fafa 0%, #d0f0f0 50%, #b0e0e0 100%);
+      overflow-x:hidden;
+      background-attachment: fixed;
+    }
+    /* Canvas background */
+    #bgCanvas{
+      position:fixed; inset:0; z-index:-2;
+      filter: saturate(115%) contrast(108%) brightness(115%);
+      opacity: 0.9;
+    }
+    /* Top gradient veil for depth */
+    .veil{
+      position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background:
+        radial-gradient(70% 50% at 40% 20%, rgba(0,255,255,0.2), transparent 60%),
+        radial-gradient(50% 70% at 90% 80%, rgba(255,128,192,0.15), transparent 60%);
+      mix-blend-mode: soft-light;
+      opacity: 1;
+    }
+    /* Navbar */
+    .nav{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+      border-bottom:1px solid var(--border);
+    }
+    .nav-inner{
+      max-width:1200px; margin:0 auto; padding:16px 24px;
+      display:flex; align-items:center; gap:18px; justify-content:space-between;
+    }
+    .brand{
+      display:flex; align-items:center; gap:14px; text-decoration:none; color:var(--text);
+    }
+    .logo{
+      width:40px; height:40px; border-radius:14px;
+      object-fit: cover;
+      box-shadow:0 0 28px rgba(0,255,255,0.3), 0 0 20px rgba(255,128,192,0.2);
+    }
+    .brand-title{
+      font-family: Unbounded, Manrope, sans-serif;
+      font-weight:900; letter-spacing:0.5px; font-size:20px; line-height:1;
+    }
+    .brand-sub{
+      display:block; font-size:12px; color:var(--muted); margin-top:3px; letter-spacing:0.4px;
+    }
+    .nav-links{
+      display:flex; gap:16px; align-items:center;
+    }
+    .nav-links a{
+      color:var(--muted); text-decoration:none; font-weight:600; font-size:15px;
+      padding:9px 12px; border-radius:12px; transition: all .2s ease;
+    }
+    .nav-links a:hover{ color:var(--text); background: var(--card); }
+    .btn{
+      appearance:none; border:none; cursor:pointer; text-decoration:none; color:#002020;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding:14px 20px; border-radius:14px; font-weight:800; letter-spacing:.3px;
+      box-shadow: 0 10px 28px rgba(0,255,255,0.3), 0 5px 14px rgba(255,128,192,0.2);
+      transition: transform .15s ease, box-shadow .25s ease, filter .25s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-2px); filter:saturate(115%); box-shadow: 0 12px 32px rgba(0,255,255,0.35), 0 6px 16px rgba(255,128,192,0.25); }
+    .btn:active{ transform: translateY(0); filter:saturate(90%); }
+    .btn-outline{
+      background: transparent; color: var(--text);
+      border:1px solid var(--border); box-shadow:none; padding:13px 19px;
+    }
+    .btn-outline:hover{ border-color: rgba(0,0,0,0.15); background: rgba(0,0,0,0.02); }
+    /* Hero */
+    .hero{
+      max-width:1200px; margin:0 auto; padding:64px 24px 28px;
+      display:grid; grid-template-columns: 1.2fr 0.8fr; gap:28px; align-items:center;
+    }
+    @media (max-width: 980px){
+      .hero{ grid-template-columns: 1fr; padding-top:40px; }
+    }
+    .headline{
+      font-family: Unbounded, Manrope, sans-serif;
+      font-size: clamp(40px, 7.5vw, 72px);
+      line-height:1.02; margin:0 0 14px;
+      background: linear-gradient(90deg, var(--primary), #c0ffff 30%, var(--secondary) 70%, #ffe0f0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 8px 28px rgba(0,255,255,0.15));
+    }
+    .kicker{
+      display:inline-flex; align-items:center; gap:12px; color:var(--muted);
+      font-weight:700; letter-spacing:.6px; text-transform:uppercase; font-size:13px;
+      background: rgba(0,0,0,0.04); border:1px solid var(--border); padding:9px 14px; border-radius:999px;
+      backdrop-filter: blur(8px);
+    }
+    .kicker .dot{
+      width:9px; height:9px; border-radius:50%; background: var(--success);
+      box-shadow: 0 0 12px rgba(0,255,128,0.7);
+    }
+    .sub{
+      color:#005050; font-size: clamp(17px, 2.3vw, 19px); max-width: 760px;
+    }
+    .cta{ display:flex; gap:14px; flex-wrap:wrap; margin-top:20px; }
+    .hero-card{
+      background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.01));
+      border:1px solid var(--border); border-radius: var(--radius);
+      padding:20px; box-shadow: var(--shadow); position:relative; overflow:hidden;
+    }
+    .hero-card::before{
+      content:""; position:absolute; inset:-3px;
+      background: conic-gradient(from 0deg, rgba(0,255,255,0.18), rgba(255,128,192,0.18), rgba(64,192,192,0.18), transparent 60%);
+      filter: blur(25px); z-index:-1;
+    }
+    .ca-row{
+      display:flex; gap:12px; align-items:center; margin-top:10px;
+    }
+    .ca-input{
+      flex:1; background: rgba(255,255,255,0.85); border:1px solid var(--border);
+      color:var(--text); padding:14px 16px; border-radius:14px; font-weight:700; letter-spacing:.5px;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .copy-btn{
+      background: rgba(0,0,0,0.04); color:var(--text);
+      border:1px solid var(--border); padding:14px 16px; border-radius:14px; font-weight:800; cursor:pointer;
+      transition: all .2s ease; display:inline-flex; align-items:center; gap:10px;
+    }
+    .copy-btn:hover{ background: rgba(0,0,0,0.07); }
+    .tag{
+      display:inline-flex; align-items:center; gap:10px; font-size:13px; color:var(--muted);
+      background: rgba(0,0,0,0.04); padding:9px 14px; border-radius:999px; border:1px solid var(--border);
+    }
+    .stats{
+      display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; margin-top:16px;
+    }
+    @media (max-width: 520px){ .stats{ grid-template-columns: 1fr 1fr; } }
+    .stat{
+      background: rgba(0,0,0,0.03); border:1px solid var(--border); border-radius:14px;
+      padding:14px 16px;
+    }
+    .stat .label{ color:var(--muted); font-size:13px; }
+    .stat .value{ font-weight:900; font-size:20px; margin-top:5px; }
+    /* Sections */
+    .section{
+      max-width:1200px; margin:0 auto; padding:32px 24px;
+    }
+    .section-title{
+      font-family: Unbounded, Manrope, sans-serif; font-size: clamp(26px, 3.2vw, 38px);
+      margin:0 0 16px; background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .grid{
+      display:grid; gap:18px;
+    }
+    .grid-3{ grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 900px){ .grid-3{ grid-template-columns: 1fr; } }
+    .card{
+      background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.01));
+      border:1px solid var(--border); border-radius: var(--radius);
+      padding:20px; box-shadow: var(--shadow);
+    }
+    .card h3{ margin:0 0 10px; font-size:20px; }
+    .muted{ color: var(--muted); }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .steps{ counter-reset: step; display:grid; gap:16px; }
+    .step{
+      display:flex; gap:14px; align-items:flex-start; background: rgba(0,0,0,0.03);
+      border:1px solid var(--border); padding:16px; border-radius:16px;
+    }
+    .step::before{
+      counter-increment: step; content: counter(step);
+      width:32px; height:32px; border-radius:10px; display:grid; place-items:center; font-weight:800; font-size:18px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary)); color:#002020; flex: 0 0 auto;
+      box-shadow: 0 8px 20px rgba(0,255,255,0.25), 0 5px 14px rgba(255,128,192,0.15);
+    }
+    .footer{
+      background: linear-gradient(180deg, var(--bg-1), var(--bg-0)); /* smooth transition */
+      border-top:1px solid var(--border);
+      padding:36px 24px; text-align:center; font-size:15px; color:var(--muted);
+    }
+    .footer a{ color:var(--primary); text-decoration:none; }
+    .footer a:hover{ text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+  <div class="veil"></div>
+
+  <!-- Navbar -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="brand">
+        <img src="miku-avatar.png" alt="Miku Avatar" class="logo">
+        <div>
+          <div class="brand-title">MIKU</div>
+          <div class="brand-sub">Hatsune Miku</div>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="#tokenomics">Tokenomics</a>
+        <a href="#how-to-buy">How to Buy</a>
+        <a href="https://pump.fun" target="_blank" class="btn">Buy MIKU</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div>
+      <div class="kicker"><div class="dot"></div>Live on Pump.fun</div>
+      <h1 class="headline">Miku Hatsune<br><span style="background:linear-gradient(90deg,#00ff80,#40c0c0);-webkit-background-clip:text;background-clip:text;color:transparent;">$MIKU</span></h1>
+      <p class="sub">The first meme token inspired by the Vocaloid legend — Hatsune Miku. Created by the community for the community on Solana via Pump.fun. The future of memes starts here.</p>
+      <div class="cta">
+        <a href="https://pump.fun" target="_blank" class="btn">Buy on Pump.fun</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="tag">Contract Address</div>
+      <div class="ca-row">
+        <input type="text" class="ca-input mono" value="YOUR_CONTRACT_ADDRESS_HERE" readonly>
+        <button class="copy-btn" onclick="copyCA()">📋 Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tokenomics -->
+  <section class="section" id="tokenomics">
+    <h2 class="section-title">Tokenomics</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <h3>Total Supply</h3>
+        <p class="muted">1,000,000,000 MIKU</p>
+      </div>
+      <div class="card">
+        <h3>Taxes</h3>
+        <p class="muted">0% buy / 0% sell</p>
+      </div>
+      <div class="card">
+        <h3>Launch Type</h3>
+        <p class="muted">Fair Launch</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Buy -->
+  <section class="section" id="how-to-buy">
+    <h2 class="section-title">How to Buy $MIKU</h2>
+    <div class="steps">
+      <div class="step">
+        <div>
+          <strong>Create a Solana Wallet</strong>
+          <p class="muted">Download Phantom or Solflare. It takes 1 minute.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <strong>Fund with SOL</strong>
+          <p class="muted">Buy SOL on Binance, Bybit or another exchange and transfer to your wallet.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <strong>Go to Pump.fun</strong>
+          <p class="muted">Paste CA and swap SOL for $MIKU. Done!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Join the Miku Army -->
+  <section class="section">
+    <h2 class="section-title">Join the Miku Army</h2>
+    <div class="cta" style="justify-content:center; gap:20px;">
+      <a href="https://twitter.com/intent/tweet?text=Just%20joined%20%23Miku" target="_blank" class="btn" style="padding:16px 24px; font-size:16px;">Share on X</a>
+      <a href="https://x.com/MikuHatsuneDev" target="_blank" class="btn btn-outline" style="padding:15px 23px; font-size:16px;">Official X Channel</a>
+      <a href="https://web.telegram.org/k/#@MIKUCoinSol0" target="_blank" class="btn btn-outline" style="padding:15px 23px; font-size:16px;">Official Telegram</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2025 Miku Hatsune ($MIKU) — meme token on Solana. <br>This site is for entertainment purposes only. Not financial advice. Always do your own research!</p>
+  </footer>
+
+  <script>
+    // Canvas background animation
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    let particles = [];
+    const particleCount = 100;
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = Math.random() * 0.8 - 0.4;
+        this.speedY = Math.random() * 0.8 - 0.4;
+        this.color = Math.random() > 0.5 ? 'rgba(0,255,255,0.5)' : 'rgba(255,128,192,0.5)';
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Copy CA
+    function copyCA() {
+      const input = document.querySelector('.ca-input');
+      input.select();
+      document.execCommand('copy');
+      const btn = document.querySelector('.copy-btn');
+      const original = btn.innerHTML;
+      btn.innerHTML = '✓ Copied!';
+      setTimeout(() => btn.innerHTML = original, 1500);
+    }
+  </script>
+</body>
+</html>
